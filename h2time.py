@@ -276,11 +276,7 @@ class H2Time:
 
     async def run_attack(self):
         for request_number in range(self.num_request_pairs):
-            # Clear RateLimiting
-            if request_number % 4 == 0:
-                os.system('curl \'https://timingattack.dk/defaultlogin/public/login\'  -H \'authority: timingattack.dk\'  -H \'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\'  -H \'accept-language: da-DK,da;q=0.9,en-US;q=0.8,en;q=0.7,de;q=0.6\'  -H \'cache-control: max-age=0\'  -H \'content-type: application/x-www-form-urlencoded\' -H \'origin: https://timingattack.dk\'  -H \'referer: https://timingattack.dk/defaultlogin/public/login\'  -H \'sec-ch-ua: " Not A;Brand";v="99", "Chromium";v="102", "Google Chrome";v="102"\'  -H \'sec-ch-ua-mobile: ?0\'  -H \'sec-ch-ua-platform: "Linux"\'  -H \'sec-fetch-dest: document\'  -H \'sec-fetch-mode: navigate\'  -H \'sec-fetch-site: same-origin\'  -H \'sec-fetch-user: ?1\'  -H \'upgrade-insecure-requests: 1\'  -H \'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36\'  --data-raw \'email=jens%40ephort.dk&password=abcd1234\'  --compressed')
-                os.system('curl \'https://timingattack.dk/defaultlogin/public/logout\'  -H \'authority: timingattack.dk\'  -H \'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\'  -H \'accept-language: da-DK,da;q=0.9,en-US;q=0.8,en;q=0.7,de;q=0.6\'  -H \'cache-control: max-age=0\'  -H \'content-type: application/x-www-form-urlencoded\' -H \'origin: https://timingattack.dk\'  -H \'referer: https://timingattack.dk/defaultlogin/public/login\'  -H \'sec-ch-ua: " Not A;Brand";v="99", "Chromium";v="102", "Google Chrome";v="102"\'  -H \'sec-ch-ua-mobile: ?0\'  -H \'sec-ch-ua-platform: "Linux"\'  -H \'sec-fetch-dest: document\'  -H \'sec-fetch-mode: navigate\'  -H \'sec-fetch-site: same-origin\'  -H \'sec-fetch-user: ?1\'  -H \'upgrade-insecure-requests: 1\'  -H \'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36\'  --data-raw \'email=jens%40ephort.dk&password=abcd1234\'  --compressed')
-
+            # This is where I removed the rate limiting bit
             time.sleep(self.inter_request_time_ms / 1000)
             if not self.protocol.connection_open:
                 break
