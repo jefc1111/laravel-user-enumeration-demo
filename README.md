@@ -34,11 +34,11 @@ Tom Van Goethem et al (Timeless timing attacks)
 
 
 ## Geoff's notes
-`while sleep 61; do python laravel.py https://laravel7app.com/login {registered email} {target email} {"control"|"attack"} >> {filename}; done`
-I.e. 
-`while sleep 61; do python laravel.py https://laravel7app.com/login known-registered-account@gmail.com target@gmail.com control >> target_local.csv; done`
-Switch final arg "control" to "attack" to probe the target user
-
+`while sleep 61; do python laravel.py https://laravel7app.com/login {registered email} {target email} {"control"|"attack"} >> {filename}; done`  
+I.e.  
+`while sleep 61; do python laravel.py https://laravel7app.com/login known-registered-account@gmail.com target@gmail.com control >> target_local.csv; done`  
+Switch final arg "control" to "attack" to probe the target user  
+  
 Filenames
 ```
 target_local.csv
@@ -47,5 +47,5 @@ target_remote.csv
 control_remote.csv
 ```
 
-TODO
+TODO  
 Parameterise (maybe as ENV vars, or preferably script args?) various things
