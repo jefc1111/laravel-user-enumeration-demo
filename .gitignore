@@ -1,5 +1,3 @@
 __pycache__/
 .idea
-*.csv
-results
-results/*
+
