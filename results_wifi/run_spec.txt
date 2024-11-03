@@ -1,0 +1,4 @@
+`while sleep 61; do python laravel.py {url} {registered email} {target email} local attack; done`
+
+On WiFi LAN
+Remote is the AWS deployment
