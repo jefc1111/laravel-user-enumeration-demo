@@ -7,10 +7,11 @@ import sys
 
 
 async def attack():
-    # h2time.py has been amended, so that for each 4th request a correct login+logout with a known user credential is done so that ratelimiting is bypassed.
+    detail_file = open("results/" + sys.argv[4] + "_" + sys.argv[5] + "_detail.csv", "a")
+    winners_file = open("results/" + sys.argv[4] + "_" + sys.argv[5] + "_winners.csv", "a")
 
     # This must be the email that you as the hacker want to test if exists on the site
-    if sys.argv[4] == "control":
+    if sys.argv[5] == "control":
         post_data = 'password=12345789abc&email=' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=6)) + '@ephort.dk'
     else:
         post_data = 'password=12345789abc&email=' + sys.argv[3]
@@ -33,7 +34,7 @@ async def attack():
         results = await h2t.run_attack()
         output = '\n'.join(map(lambda x: ','.join(map(str, x)), results))
         num = output.count('-')
-    print(output)
+    # print(output)
     # print((num / num_request_pairs) * 100)
     if ((num - (num_request_pairs/2)) > safety_margin):
         #print("Request 1 is likely winner (response received last from server in %s of the request pairs)" % (num))
@@ -47,6 +48,12 @@ async def attack():
         #print("Could not determine winner. Even distributed with %s responses that came in with response 1 last" % (num))
 
     # print(winner)
+
+    detail_file.write(output + "\n")
+    winners_file.write(winner + "\n")
+
+    detail_file.close()
+    winners_file.close()
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(attack())
