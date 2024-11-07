@@ -30,10 +30,15 @@ async def attack():
     
     safety_margin = num_request_pairs / 5
     
-    async with H2Time(r1, r2, num_request_pairs=num_request_pairs, num_padding_params=40, sequential=True, inter_request_time_ms=10, timeout=50) as h2t:
-        results = await h2t.run_attack()
-        output = '\n'.join(map(lambda x: ','.join(map(str, x)), results))
-        num = output.count('-')
+    if (sys.argv[6] == "sequential"):
+        # for in in range(num_request_pairs):
+
+    else:
+        async with H2Time(r1, r2, num_request_pairs=num_request_pairs, num_padding_params=40, sequential=True, inter_request_time_ms=10, timeout=50) as h2t:
+            results = await h2t.run_attack()
+            output = '\n'.join(map(lambda x: ','.join(map(str, x)), results))
+            num = output.count('-')
+
     print(output)
     # print((num / num_request_pairs) * 100)
     if ((num - (num_request_pairs/2)) > safety_margin):
