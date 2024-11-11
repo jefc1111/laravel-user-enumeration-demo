@@ -72,6 +72,8 @@ Winners files have contents like this:
 1
 2
 ```
+Each result is derived from five pairs of requests.
+
 
 ### Recon for targets
 - Find known vulnerable apps (i.e. based on Laravel 7)
