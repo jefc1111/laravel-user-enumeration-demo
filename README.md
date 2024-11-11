@@ -47,6 +47,8 @@ completed_results/concurrent/non-randomised/400200/local_control_detail.csv
 completed_results/concurrent/non-randomised/400200/local_control_winners.csv
 ```
 Note that "400200" indicates that 40ms of latency and 20ms of jitter were used. 
+Where the jitter is randomised, those values represent maximums. 
+Randomised jitter was added using https://github.com/jefc1111/randomised-jitter-maker/tree/master
 
 Detail files have contents like this (these are from a 'known + unknown' batch):
 ```
@@ -74,7 +76,7 @@ Winners files have contents like this:
 ### Recon for targets
 - Find known vulnerable apps (i.e. based on Laravel 7)
 - Run the attack on targets against _two known_ existing user accounts and see if the results are different from a control attack (where one account is known to exist, and one is known to not exist). 
-If 'known + unknown' looks different from 'known + known' then the system appears to be vulnerable. 
+If 'known & unknown' looks different from 'known & known' then the system appears to be vulnerable. 
 - The attack is irrelevant if the system is not already explicitly designed to try to avoid enumeration attacks (i.e. if it has user feedback messages at login that explicitly diferentiate between unknown usernames vs. unknown passwords)
 
 ### Requirements for attack
@@ -84,7 +86,7 @@ If 'known + unknown' looks different from 'known + known' then the system appear
 - Knowledge of one existing account on the target system
 
 ### Stretch goals
-- Run same against a fixed version of Laravel and confirm that it is not possible to distinguish between 'known + unknown' and 'known + known' pairs
+- Run same against a fixed version of Laravel and confirm that it is not possible to distinguish between 'known & unknown' and 'known & known' pairs
 - Use a 'worse' location for the remote target to make the attack more difficult overall
 - Improve error handling in the script
 - Move configuration into a file, or use a configuration object with named elements
