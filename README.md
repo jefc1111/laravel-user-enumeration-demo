@@ -34,27 +34,19 @@ Tom Van Goethem et al (Timeless timing attacks)
 
 
 ## Geoff's notes
-`while sleep 61; do python laravel.py {login URL} {registered email} {target email} {"local"|"remote"|"distant"} {"control"|"attack"}; done`  
+`while sleep 61; do python laravel.py {login URL} {registered email} {target email} {"local"|"remote"|"distant"} {"control"|"attack"} {"concurrent"|"sequential"}; done`  
 I.e.  
-`while sleep 61; do python laravel.py https://laravel7app.com/login known-registered-account@gmail.com target@gmail.com local control; done`  
-Switch final arg "control" to "attack" to probe the target user account
+`while sleep 61; do python laravel.py https://laravel7app.com/login known-registered-account@gmail.com target@gmail.com local control concurrent; done`
+Switch penultimate arg "control" to "attack" to probe the target user account
   
-Filenames are like this
+CSV outputs are saved in paths similar to this
 ```
-results/local_control_detail.csv
-results/local_control_winners.csv
-results/remote_control_detail.csv
-results/remote_control_winners.csv
-results/distant_control_detail.csv
-results/distant_control_winners.csv
-results/local_target_detail.csv
-results/local_target_winners.csv
-results/remote_target_detail.csv
-results/remote_target_winners.csv
-results/distant_target_detail.csv
-results/distant_target_winners.csv
-
+completed_results/concurrent/non-randomised/400200/local_attack_detail.csv
+completed_results/concurrent/non-randomised/400200/local_attack_winners.csv
+completed_results/concurrent/non-randomised/400200/local_control_detail.csv
+completed_results/concurrent/non-randomised/400200/local_control_winners.csv
 ```
+Note that "400200" indicates that 40ms of latency and 20ms of jitter were used. 
 
 Detail files have contents like this (these are from a 'known + unknown' batch):
 ```
@@ -88,13 +80,15 @@ If 'known + unknown' looks different from 'known + known' then the system appear
 ### Requirements for attack
 - HTTP/2
 - No CSRF tokens (or maybe modify the script to obtain them)
-- Allow 5 login attempts per minute per account/IP combo (if intending to use more than one salvo)
+- Allow 5 login attempts per minute per account/IP combo (if intending to use more than one batch)
 - Knowledge of one existing account on the target system
 
 ### Stretch goals
-- Run a traditional (sequential) timing attack against the Laravel 7 target and see how much more difficult it is to interpret the results (note that on a real target there are likely to be many more variable factors which might affect a traditional attack more than a tta attack, i.e. server load due to other 'real' users, other traffic. Tta is designed to render such noise irrelevant as each pair is theoretically subjected to the same outside factors)
 - Run same against a fixed version of Laravel and confirm that it is not possible to distinguish between 'known + unknown' and 'known + known' pairs
-- Use a 'worse' location for the remote target to make the attack more diifcult overall
+- Use a 'worse' location for the remote target to make the attack more difficult overall
+- Improve error handling in the script
+- Move configuration into a file, or use a configuration object with named elements
+- 'join up' the attack with the analysis, via a database
 
 ## Summary
 The real beauty of the Timeless Timing Attack approach is how effective it is in the face of variable network conditions. 
