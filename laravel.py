@@ -35,6 +35,7 @@ async def attack():
     target_account_email = sys.argv[3] # We want to know if an account exists with this email
     target_location = sys.argv[4] # "local" | "remote"
     activity_type = sys.argv[5] # "attack" | "control"
+    attack_style = sys.argv[6] # "concurrent" | "sequential"
 
     detail_file = open("results/" + target_location + "_" + activity_type + "_detail.csv", "a")
     winners_file = open("results/" + target_location + "_" + activity_type + "_winners.csv", "a")
@@ -65,7 +66,7 @@ async def attack():
     
     safety_margin = num_request_pairs / 5
     
-    if (sys.argv[6] == "sequential"):
+    if (attack_style == "sequential"):
         results = []
         for i in range(num_request_pairs):
             timings = measure_response_time(target_url, data=post_data, headers=headers)
