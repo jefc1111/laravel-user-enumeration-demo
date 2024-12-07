@@ -83,7 +83,7 @@ If 'known & unknown' looks different from 'known & known' then the system appear
 
 ### Requirements for attack
 - HTTP/2
-- No CSRF tokens (or maybe modify the script to obtain them)
+- No CSRF tokens (or potentially modify the script to obtain them)
 - Allow 5 login attempts per minute per account/IP combo (if intending to use more than one batch)
 - Knowledge of one existing account on the target system
 
